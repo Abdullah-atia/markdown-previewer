@@ -1,48 +1,64 @@
-import './App.css';
-import React, {useState} from 'react';
-import {marked} from 'marked'
+import "./App.css";
+import React, { useState } from "react";
+import { marked } from "marked";
+import Docs from "./components/Docs/Docs";
+import { useLocalStorage } from "./Hooks/useLocalStorage";
 
 const App = () => {
-  const [code, setCode] = useState('## Hello')
-  const [compiled, setCompiled] = useState('<h2 id="hello">Hello</h2>')
-  const [hide, hidePreview] = useState(true)
+  const [code, setcode] = useLocalStorage("code");
+  const [compiledLocal, setCompiledLocal] = useLocalStorage("compiled");
+  const [hide, sethide] = useState([true, false, false]);
 
-  const openMD = () => {
-    console.log(0)
-    hidePreview(true)
-  }
-
-  const openPreview = () => {
-    console.log(0)
-    hidePreview(false)
-  }
+  const openPreview = (num) => {
+    if (num === 1) {
+      sethide([true, false, false]);
+    } else if (num === 2) {
+      sethide([false, true, false]);
+    } else {
+      sethide([false, false, true]);
+    }
+  };
 
   const handleChange = (e) => {
-    setCode(e.target.value)
-    setCompiled(marked.parse(e.target.value))
-  }
+    setcode(e.target.value);
+    setCompiledLocal(marked.parse(e.target.value));
+  };
 
   return (
     <>
       <h1>MarkDown Previewer React App</h1>
       <div className="container">
         <div className="btns">
-          <button onClick={openMD} className="btn">MarkDown</button>
-          <button onClick={openPreview}>Preview</button>
+          <button
+            onClick={() => openPreview(1)}
+            className="btn" >
+            MarkDown
+          </button>
+          <button
+            onClick={() => openPreview(2)}
+            className= "btn" >
+            Preview
+          </button>
+          <button
+            onClick={() => openPreview(3)}
+            className= "btn">
+            Docs
+          </button>
         </div>
-        {
-        hide ? 
+        {hide[2] ? (
+          <Docs />
+        ) : hide[0] ? (
           <div>
-            <textarea onChange={handleChange} value={code}/>
-          </div> : 
-          <div>
-            <textarea value={compiled}/>
+            <textarea onChange={handleChange} value={code} />
           </div>
-        }
+        ) : (
+          <div>
+            <textarea value={compiledLocal} />
+          </div>
+        )}
       </div>
     </>
-  )
-}
-
+  );
+};
 
 export default App;
